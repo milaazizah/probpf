@@ -23,28 +23,31 @@
         }
         
         /* Layout Utama */
+        /* Catatan: Karena Anda menggunakan fixed position pada sidebar,
+           pastikan Anda menyesuaikan margin-left untuk main-content di sini
+           atau di style spesifik sidebar_guru/siswa */
         .sidebar {
             width: 280px;
             min-height: 100vh;
             background-color: var(--bs-bg-light); 
             border-right: 1px solid #dee2e6;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.05); /* Shadow halus untuk kesan modern */
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
             position: fixed;
             top: 0;
             left: 0;
-            z-index: 1030; /* Z-index lebih tinggi dari navbar */
+            z-index: 1030;
             padding-top: 56px; 
-            overflow-y: auto; /* Untuk sidebar yang panjang */
+            overflow-y: auto;
         }
         .main-content {
-            margin-left: 280px; 
+            margin-left: 280px; /* Diperlukan untuk memberi ruang sidebar fixed */
             padding-top: 70px; 
             padding-bottom: 20px;
         }
         
         /* Style Navbar */
         .navbar {
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04); /* Shadow pada Navbar */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
             z-index: 1020;
         }
 
@@ -53,7 +56,7 @@
             color: var(--bs-secondary);
             padding: 10px 15px;
             border-radius: 0.25rem;
-            margin: 2px 8px; /* Memberi sedikit margin dari pinggir */
+            margin: 2px 8px;
             transition: all 0.2s;
         }
         .sidebar .nav-link:hover {
@@ -61,7 +64,7 @@
             color: var(--bs-primary) !important;
         }
         .sidebar .nav-link.active {
-            background-color: var(--bs-primary); /* Warna aktif lebih tegas */
+            background-color: var(--bs-primary);
             color: white !important;
             font-weight: 600;
         }
@@ -74,7 +77,7 @@
             margin-top: 10px;
         }
 
-        /* Responsiveness Dasar (Opsional: Sembunyikan sidebar di mobile) */
+        /* Responsiveness Dasar */
         @media (max-width: 992px) {
             .sidebar {
                 width: 100%;
@@ -104,7 +107,15 @@
         @include('partials.header')
         
         <div class="d-flex">
-            @include('partials.sidebar')
+            
+            {{-- LOGIKA BARU: MEMILIH SIDEBAR BERDASARKAN ROLE --}}
+            @if (Auth::user()->role === 'guru')
+                @include('partials.sidebar')
+            @elseif (Auth::user()->role === 'siswa')
+                @include('partials.sidebar_siswa')
+            @else
+                {{-- Opsi: Sidebar Default/Hidden jika role tidak dikenal --}}
+            @endif
 
             <div class="main-content flex-grow-1">
                 <div class="container-fluid">

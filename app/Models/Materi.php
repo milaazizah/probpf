@@ -22,6 +22,6 @@ class Materi extends Model
     // Relasi ke Guru yang mengupload
     public function guru()
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
 }

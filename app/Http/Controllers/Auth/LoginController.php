@@ -30,8 +30,10 @@ class LoginController extends Controller
             if ($role === 'guru') {
                 return redirect()->intended(route('guru.dashboard'));
             } 
-            // Tambahkan role lain di sini jika diperlukan (misal: admin)
-            // if ($role === 'admin') { ... }
+
+            if ($role === 'siswa') {
+                return redirect()->intended(route('siswa.dashboard'));
+            } 
             
             // Default redirect
             return redirect()->intended('/');

@@ -4,6 +4,9 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\User;
+use App\Models\Siswa;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 
 class SiswaSeeder extends Seeder
@@ -13,11 +16,28 @@ class SiswaSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('siswas')->insert([
-            ['nama_siswa' => 'Budi Santoso', 'nis' => 'S1001', 'kelas' => '10 IPA 1'],
-            ['nama_siswa' => 'Citra Dewi', 'nis' => 'S1002', 'kelas' => '10 IPA 1'],
-            ['nama_siswa' => 'Doni Kusuma', 'nis' => 'S1101', 'kelas' => '11 IPS 2'],
-            ['nama_siswa' => 'Rina Sastrawan', 'nis' => 'S1102', 'kelas' => '11 IPS 1'], // Siswa baru
-        ]);
+        $siswas = [
+            [
+                'nama_siswa' => 'Budi Santoso', 
+                'nis' => 'S1001', 
+                'kelas' => 'Kelas A'
+            ],
+            [
+                'nama_siswa' => 'Citra Dewi', 
+                'nis' => 'S1002', 
+                'kelas' => 'Kelas A'
+            ],
+        ];
+
+        foreach ($siswas as $data) {
+            Siswa::firstOrCreate(
+                ['nis' => $data['nis']], // Kolom yang digunakan untuk mencari (asumsi NIS unik)
+                [
+                    'nama_siswa' => $data['nama_siswa'],
+                    'kelas' => $data['kelas'],
+                  
+                ]
+            );
+        }
     }
 }

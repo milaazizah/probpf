@@ -38,7 +38,7 @@
         <form method="POST" action="{{ route('logout') }}" class="w-100">
             @csrf
             <button type="submit" class="nav-link btn btn-link text-danger text-decoration-none w-100 text-start">
-                <i class="fas fa-right-from-bracket me-3 fa-fw"></i> Logout
+                <i class="fas fa-sign-out-alt me-2 fa-fw"></i> Keluar
             </button>
         </form>
     </div>

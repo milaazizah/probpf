@@ -38,3 +38,17 @@ Route::middleware(['auth', 'role.guru:guru'])->prefix('guru')->group(function ()
     // 5. Route Materi Pembelajaran  
     Route::resource('materi', App\Http\Controllers\Guru\MateriController::class)->names('guru.materi');
 });
+
+Route::middleware(['auth'])->prefix('siswa')->group(function () { 
+    
+    // Dashboard Siswa (Materi, Nilai, Kehadiran)
+    Route::get('/', [App\Http\Controllers\Siswa\DashboardSiswaController::class, 'index'])->name('siswa.dashboard');
+    
+    // Halaman Detail
+    Route::get('/materi', [App\Http\Controllers\Siswa\DashboardSiswaController::class, 'materiDetail'])->name('siswa.materi');
+    Route::get('/nilai', [App\Http\Controllers\Siswa\DashboardSiswaController::class, 'nilaiDetail'])->name('siswa.nilai');
+    Route::get('/kehadiran', [App\Http\Controllers\Siswa\DashboardSiswaController::class, 'kehadiranDetail'])->name('siswa.kehadiran');
+
+    Route::get('/materi/{id}', [App\Http\Controllers\Siswa\DashboardSiswaController::class, 'showMateri'])->name('siswa.materi.show');
+    
+});

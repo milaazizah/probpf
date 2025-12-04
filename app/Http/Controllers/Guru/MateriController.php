@@ -48,7 +48,7 @@ class MateriController extends Controller
         } elseif ($request->hasFile('materi_file')) {
             // Jika tipe file (video/dokumen/foto), unggah dan simpan path
             $folder = $request->tipe === 'video' ? 'videos' : ($request->tipe === 'dokumen' ? 'documents' : 'photos');
-            $path = $request->file('materi_file')->store('public/materi/' . $folder);
+            $path = $request->file('materi_file')->store('materi/' . $folder, 'public');
             $urlFile = Storage::url($path);
         } else {
             return redirect()->back()->withInput()->withErrors(['materi_file' => 'File atau link materi wajib diisi sesuai tipe.']);
