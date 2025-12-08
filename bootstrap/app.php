@@ -15,6 +15,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'role.guru' => \App\Http\Middleware\CekRoleGuru::class,
 
             'role.siswa' => \App\Http\Middleware\RoleSiswaMiddleware::class,
+
+            'role.admin' => \App\Http\Middleware\CekRoleAdmin::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

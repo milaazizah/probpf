@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
         UserSeeder::class,
         SiswaSeeder::class,
         SiswaUserSeeder::class,
+        AdminSeeder::class,
         ]);
         // User::factory(10)->create();
 

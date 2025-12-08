@@ -18,30 +18,66 @@ class LoginController extends Controller
     public function login(Request $request)
     {
         $credentials = $request->validate([
-            'email' => ['required', 'email'],
+            'email'    => ['required', 'email'],
             'password' => ['required'],
         ]);
 
-        if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
-            
-            // Arahkan ke dashboard sesuai role
-            $role = Auth::user()->role;
-            if ($role === 'guru') {
-                return redirect()->intended(route('guru.dashboard'));
-            } 
-
-            if ($role === 'siswa') {
-                return redirect()->intended(route('siswa.dashboard'));
-            } 
-            
-            // Default redirect
-            return redirect()->intended('/');
+        if (!Auth::attempt($credentials)) {
+            return back()->withErrors([
+                'email' => 'Email atau Password salah.',
+            ])->onlyInput('email');
         }
 
-        return back()->withErrors([
-            'email' => 'Email atau Password salah.',
-        ])->onlyInput('email');
+        $request->session()->regenerate();
+        $user = Auth::user();
+
+        /*
+        |--------------------------------------------------------------------------
+        | Mekanisme Status Akun Calon Siswa
+        |--------------------------------------------------------------------------
+        */
+
+        if ($user->role === 'calon_siswa') {
+
+            if ($user->status_akun === 'pending') {
+                Auth::logout();
+                return redirect()->route('login')
+                    ->with('warning', 'Pendaftaran kamu sedang diproses admin.');
+            }
+
+            if ($user->status_akun === 'declined') {
+                Auth::logout();
+                return redirect()->route('login')
+                    ->with('error', 'Pendaftaran kamu ditolak oleh admin.');
+            }
+
+            if ($user->status_akun === 'approved') {
+                // Jika approved → otomatis jadi siswa
+                $user->update([
+                    'role' => 'siswa'
+                ]);
+            }
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Redirect Berdasarkan Role
+        |--------------------------------------------------------------------------
+        */
+
+        if ($user->role === 'admin') {
+            return redirect()->intended(route('admin.dashboard'));
+        }
+
+        if ($user->role === 'guru') {
+            return redirect()->intended(route('guru.dashboard'));
+        }
+
+        if ($user->role === 'siswa') {
+            return redirect()->intended(route('siswa.dashboard'));
+        }
+
+        return redirect('/');
     }
 
     // Proses Logout

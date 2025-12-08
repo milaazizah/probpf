@@ -1,12 +1,11 @@
 <?php
-
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\Siswa;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use App\Models\Siswa;
 
 class User extends Authenticatable
 {
@@ -22,6 +21,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
+        'status_akun',
     ];
 
     /**
@@ -43,7 +44,7 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            'password'          => 'hashed',
         ];
     }
     public function jadwals()
@@ -56,9 +57,9 @@ class User extends Authenticatable
         return $this->hasMany(Materi::class);
     }
 
-    public function siswa() 
+    public function siswa()
     {
-        return $this->hasOne(Siswa::class,'user_id', 'id');    
+        return $this->hasOne(Siswa::class, 'user_id', 'id');
     }
 
 }
