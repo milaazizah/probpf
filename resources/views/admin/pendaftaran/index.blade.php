@@ -47,17 +47,77 @@
                     </td>
 
                     <td class="d-flex gap-2">
-                        <form action="{{ route('admin.pendaftaran.approve', $c->id) }}" method="POST">
-                            @csrf
-                            <button class="btn btn-success btn-sm">Approve</button>
-                        </form>
 
+                        <!-- Tombol buka modal -->
+                        <button class="btn btn-success btn-sm" data-bs-toggle="modal"
+                                data-bs-target="#approveModal{{ $c->id }}">
+                            Approve
+                        </button>
+
+                        <!-- Tombol Decline -->
                         <form action="{{ route('admin.pendaftaran.decline', $c->id) }}" method="POST">
                             @csrf
                             <button class="btn btn-danger btn-sm">Decline</button>
                         </form>
                     </td>
                 </tr>
+
+                <!-- ============================ -->
+                <!-- MODAL APPROVE -->
+                <!-- ============================ -->
+                <div class="modal fade" id="approveModal{{ $c->id }}" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+
+                            <form action="{{ route('admin.pendaftaran.approve', $c->id) }}"
+                                  method="POST">
+                                @csrf
+
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Terima Calon Siswa</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+
+                                <div class="modal-body">
+                                    <p>Masukkan data siswa untuk <b>{{ $c->name }}</b></p>
+
+                                    <div class="mb-3">
+                                        <label class="form-label">NIS</label>
+                                        <input type="text" name="nis" class="form-control"
+                                               value="NIS-{{ str_pad($c->id, 5, '0', STR_PAD_LEFT) }}"
+                                               required>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label">Kelas</label>
+                                        <select name="kelas" class="form-control" required>
+                                            <option value="">- Pilih Kelas -</option>
+                                            <option value="7A">7A</option>
+                                            <option value="7B">7B</option>
+                                            <option value="8A">8A</option>
+                                            <option value="8B">8B</option>
+                                            <option value="9A">9A</option>
+                                            <option value="9B">9B</option>
+                                        </select>
+                                    </div>
+
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                            data-bs-dismiss="modal">Batal</button>
+
+                                    <button type="submit" class="btn btn-success">
+                                        Simpan & Terima
+                                    </button>
+                                </div>
+
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
+                <!-- END MODAL -->
 
                 @empty
                 <tr>

@@ -2,16 +2,17 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\Auth\RegisterController;
-
-use App\Http\Controllers\Guru\GuruDashboardController;
-use App\Http\Controllers\Guru\JadwalController;
-use App\Http\Controllers\Guru\KehadiranController;
 use App\Http\Controllers\Guru\NilaiController;
-use App\Http\Controllers\Guru\MateriController;
 
-use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\SiswaController;
+use App\Http\Controllers\Guru\JadwalController;
+use App\Http\Controllers\Guru\MateriController;
+use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Guru\KehadiranController;
+
 use App\Http\Controllers\Admin\AdminGuruController;
+use App\Http\Controllers\Guru\GuruDashboardController;
+use App\Http\Controllers\Admin\AdminDashboardController;
 
 // ========================
 // Halaman Publik
@@ -85,6 +86,8 @@ Route::middleware(['auth', 'role.admin'])
             ->name('dashboard');
 
         Route::resource('guru', AdminGuruController::class);
+        Route::resource('siswa', SiswaController::class);
+
 
         // ====== PENDAFTARAN SISWA BARU ======
         Route::get('/pendaftaran', [AdminDashboardController::class, 'listCalon'])

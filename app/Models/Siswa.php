@@ -1,11 +1,16 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
 class Siswa extends Model
 {
+    protected $fillable = [
+        'user_id',
+        'nama_siswa',
+        'nis',
+        'kelas',
+    ];
     public function user()
     {
         // Siswa dimiliki oleh satu User, kuncinya adalah siswas.user_id ke users.id
