@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Http\Controllers\Controller;
+use Exception;
+use App\Models\User;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Laravel\Socialite\Facades\Socialite;
 
 class LoginController extends Controller
 {
@@ -14,7 +17,7 @@ class LoginController extends Controller
         return view('auth.login');
     }
 
-    // Proses Login
+    // Proses Login Email & Password
     public function login(Request $request)
     {
         $credentials = $request->validate([
@@ -31,56 +34,10 @@ class LoginController extends Controller
         $request->session()->regenerate();
         $user = Auth::user();
 
-        /*
-        |--------------------------------------------------------------------------
-        | Mekanisme Status Akun Calon Siswa
-        |--------------------------------------------------------------------------
-        */
-
-        if ($user->role === 'calon_siswa') {
-
-            if ($user->status_akun === 'pending') {
-                Auth::logout();
-                return redirect()->route('login')
-                    ->with('warning', 'Pendaftaran kamu sedang diproses admin.');
-            }
-
-            if ($user->status_akun === 'declined') {
-                Auth::logout();
-                return redirect()->route('login')
-                    ->with('error', 'Pendaftaran kamu ditolak oleh admin.');
-            }
-
-            if ($user->status_akun === 'approved') {
-                // Jika approved → otomatis jadi siswa
-                $user->update([
-                    'role' => 'siswa'
-                ]);
-            }
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | Redirect Berdasarkan Role
-        |--------------------------------------------------------------------------
-        */
-
-        if ($user->role === 'admin') {
-            return redirect()->intended(route('admin.dashboard'));
-        }
-
-        if ($user->role === 'guru') {
-            return redirect()->intended(route('guru.dashboard'));
-        }
-
-        if ($user->role === 'siswa') {
-            return redirect()->intended(route('siswa.dashboard'));
-        }
-
-        return redirect('/');
+        return $this->handleRoleRedirect($user);
     }
 
-    // Proses Logout
+    // Logout
     public function logout(Request $request)
     {
         Auth::logout();
@@ -89,4 +46,61 @@ class LoginController extends Controller
 
         return redirect('/');
     }
+
+public function redirectToGoogle()
+{
+    return Socialite::driver('google')->redirect();
+}
+
+public function handleGoogleCallback()
+{
+    try {
+        $googleUser = Socialite::driver('google')->user();
+        $email = $googleUser->email;
+
+        $user = User::where('email', $email)->first();
+
+        if (!$user) {
+            return redirect()->route('login')
+                ->with('error', 'Akun Google ini belum terdaftar.');
+        }
+
+        Auth::login($user, true);
+
+        // Redirect berdasarkan role / status
+        return $this->handleRoleRedirect($user);
+
+    } catch (\Exception $e) {
+        return redirect()->route('login')
+            ->with('error', 'Login Google gagal: ' . $e->getMessage());
+    }
+}
+
+// Buat function helper untuk redirect role
+private function handleRoleRedirect($user)
+{
+    if ($user->role === 'calon_siswa') {
+        if ($user->status_akun === 'pending') {
+            Auth::logout();
+            return redirect()->route('login')
+                ->with('warning', 'Pendaftaran kamu sedang diproses admin.');
+        }
+
+        if ($user->status_akun === 'declined') {
+            Auth::logout();
+            return redirect()->route('login')
+                ->with('error', 'Pendaftaran kamu ditolak oleh admin.');
+        }
+
+        if ($user->status_akun === 'approved') {
+            $user->update(['role' => 'siswa']);
+        }
+    }
+
+    if ($user->role === 'admin') return redirect()->route('admin.dashboard');
+    if ($user->role === 'guru') return redirect()->route('guru.dashboard');
+    if ($user->role === 'siswa') return redirect()->route('siswa.dashboard');
+
+    return redirect('/');
+}
 }

@@ -1,15 +1,14 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Guru\NilaiController;
-
 use App\Http\Controllers\Admin\SiswaController;
 use App\Http\Controllers\Guru\JadwalController;
 use App\Http\Controllers\Guru\MateriController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Guru\KehadiranController;
-
 use App\Http\Controllers\Admin\AdminGuruController;
 use App\Http\Controllers\Guru\GuruDashboardController;
 use App\Http\Controllers\Admin\AdminDashboardController;
@@ -26,7 +25,17 @@ Route::view('/contact', 'contact')->name('contact');
 // ========================
 // Auth Routes (Login & Register)
 // ========================
+
+// Route untuk menampilkan avatar, bisa diakses publik
+Route::get('/avatar/{filename}', [App\Http\Controllers\ProfileController::class, 'showAvatar'])
+    ->name('avatar.show');
+
 Route::middleware('guest')->group(function () {
+    // Login dengan Google
+Route::get('/auth/redirect-google', [LoginController::class, 'redirectToGoogle'])->name('redirect.google');
+// Gunakan ini
+Route::get('/auth/google/callback', [LoginController::class, 'handleGoogleCallback']);
+
 
     // Login
     Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
@@ -88,7 +97,6 @@ Route::middleware(['auth', 'role.admin'])
         Route::resource('guru', AdminGuruController::class);
         Route::resource('siswa', SiswaController::class);
 
-
         // ====== PENDAFTARAN SISWA BARU ======
         Route::get('/pendaftaran', [AdminDashboardController::class, 'listCalon'])
             ->name('pendaftaran.index');
@@ -98,6 +106,9 @@ Route::middleware(['auth', 'role.admin'])
 
         Route::post('/pendaftaran/{id}/decline', [AdminDashboardController::class, 'decline'])
             ->name('pendaftaran.decline');
+    });
+
+    Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
 });
-
-
